@@ -17,6 +17,7 @@ We're using mondo-bank with callback syntax
 
 ## To Fix
 - `transactions` only works if you `@` the bot
+- Catch all errors
 
 ## Enhancements
 - thinking emojis
@@ -27,4 +28,4 @@ We're using mondo-bank with callback syntax
 - visualise le data
 - team spending
 - team reimbursements
-- ML ALL DA THINGS `wit.ai`
+- ML ALL DA THINGS, chrono to parse any dates
