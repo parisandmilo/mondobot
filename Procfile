@@ -1,1 +1,1 @@
-slack: node mondobot.js
+web: node mondobot.js
