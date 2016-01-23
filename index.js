@@ -43,7 +43,7 @@ var bot = controller.spawn({
 controller.on('bot_channel_join', function(bot, message){
     bot.say({
         channel: message.channel,
-        text: "Hello Mondo!!!"
+        text: "Hello I'm your MondoBot!!!"
     });
 });
 
