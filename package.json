@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/parisandmilo/mondobot#readme",
   "dependencies": {
-    "botkit": "0.0.5",
+    "botkit": "howdyai/botkit",
     "dotenv": "^2.0.0",
     "mondo-bank": "^0.1.9"
   }
