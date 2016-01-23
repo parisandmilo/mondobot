@@ -1,20 +1,24 @@
-# mondo-slack
+# MondoBot for Slack
 MONDO HACK III
-Building a mondo slack integrating running botkit, and mondo-bank
-# Setup
+Building a mondo-slack integrating running botkit, and mondo-bank
+
+## Setup
 `npm install` to install dependencies
 
-`cp .env.example .env` and change the environment variables to your creds
+`cp .env.example .env` and change the environment variables to your creds - *only* `mondo_token` & `slack_token` are required
 
-#Coding style
+note: you need to `npm start` for your bot to be online. you also have to manually config your bot atm sozzles
+
+
+## Coding style
 2 space tabs, tabs translated to spaces
 
 We're using mondo-bank with callback syntax
 
-# To Fix
+## To Fix
 - `transactions` only works if you `@` the bot
 
-# Enhancements
+## Enhancements
 - thinking emojis
 - for any queries that are out of context, it send off your query to giphy
 - multiple accounts
