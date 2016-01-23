@@ -87,6 +87,15 @@ controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', funct
 
 //transactions command
 controller.hears(['transactions'], 'direct_message,direct_mention,mention', function(bot, message){
+	bot.api.reactions.add({
+    timestamp: message.ts,
+    channel: message.channel,
+    name: 'thinking_face',
+  },function(err,res) {
+    if (err) {
+      bot.botkit.log("soz no emoji lulz",err);
+    }
+  });
   bot.reply(message, "Getting transactions", function(){
     mondo.accounts(mondoToken, function(err, value){
       if(value.accounts.length == 1){
@@ -100,9 +109,35 @@ controller.hears(['transactions'], 'direct_message,direct_mention,mention', func
               return index + 1 + ". transaction: " + transaction.description + ", " + transaction.description + ", " + formatGBP(transaction.amount);
             }).join("\n");
             bot.reply(message, text);
+            bot.api.reactions.remove({
+					    timestamp: message.ts,
+					    channel: message.channel,
+					    name: 'thinking_face',
+					    },function(err,res) {
+					    if (err) {
+					      bot.botkit.log("soz i failed",err);
+					    }
+					  }); 
+					  bot.reply(message,{
+					  		icon_emoji: ":rocket:",
+					  		username: "simplebot",
+					      text: ":smoking: simple.",
+					    });
           });
         });
       }
-    });
+      else {
+      	bot.api.reactions.add({
+          timestamp: message.ts,
+          channel: message.channel,
+          name: 'slightly_frowning_face',
+          },function(err,res) {
+          if (err) {
+            bot.botkit.log("soz no emoji lulz",err);
+          }
+          });
+      	bot.reply(message, "you have no transactions LOL go spend dat moniez $$$");
+      }
+    });    
   });
 });
