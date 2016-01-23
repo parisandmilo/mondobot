@@ -22,6 +22,7 @@ if (!process.env.mondo_token) {
 
 var mondo = require('mondo-bank');
 var Botkit = require('botkit');
+var d3 = require("d3");
 
 var mondoToken = process.env.mondo_token;
 
@@ -43,7 +44,7 @@ var bot = controller.spawn({
 controller.on('bot_channel_join', function(bot, message){
     bot.say({
         channel: message.channel,
-        text: "Hello Mondo!!!"
+        text: "Hello I'm your MondoBot!!!"
     });
 });
 
