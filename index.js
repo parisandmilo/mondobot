@@ -29,6 +29,11 @@ var controller = Botkit.slackbot({
     debug: true,
 });
 
+var webshot = require('webshot');
+var fs      = require('fs');
+var data		= require('./data.js');
+
+
 function formatGBP(value){
   var str = value +'';
   var len = str.length;
@@ -140,4 +145,53 @@ controller.hears(['transactions'], 'direct_message,direct_mention,mention', func
       }
     });    
   });
+});
+
+
+// data viz
+
+controller.hears(['show me where i spend the most money'], 'direct_message,direct_mention,mention', function(bot, message){
+	bot.api.reactions.add({
+    timestamp: message.ts,
+    channel: message.channel,
+    name: 'thinking_face',
+  },function(err,res) {
+    if (err) {
+      bot.botkit.log("soz no emoji lulz",err);
+    }
+  });
+	bot.reply(message, "hold on", function(){
+		mondo.accounts(mondoToken, function(err, value){
+      if(value.accounts.length == 1){
+        var account_id = value.accounts[0].id;
+        var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
+        bot.reply(message, text, function(){
+          mondo.transactions(account_id, mondoToken, function(err, value){
+          	var show = data.visualise(value.transactions);
+            // var text = JSON.stringify(value.transactions);
+            // var text = value.transactions.map(function(transaction, index){
+              // return index + 1 + ". transaction: " + transaction.description + ", " + transaction.description + ", " + formatGBP(transaction.amount);
+            // }).join("\n");
+            bot.reply(message, show, function(){
+            	var renderStream = webshot('index.html');
+							var file = fs.createWriteStream('test.png', {encoding: 'binary'});
+							 
+							renderStream.on('data', function(data) {
+							  file.write(data.toString('binary'), 'binary');
+							});
+            });
+            bot.api.reactions.remove({
+					    timestamp: message.ts,
+					    channel: message.channel,
+					    name: 'thinking_face',
+					    },function(err,res) {
+					    if (err) {
+					      bot.botkit.log("soz i failed",err);
+					    }
+					  }); 
+					});
+        });
+		}
+		});
+	});
 });
