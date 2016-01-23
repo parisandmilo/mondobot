@@ -13,6 +13,7 @@ We're using mondo-bank with callback syntax
 
 # To Fix
 - `transactions` only works if you `@` the bot
+- Catch all errors
 
 # Enhancements
 - thinking emojis
