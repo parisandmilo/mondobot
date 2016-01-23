@@ -16,6 +16,7 @@ We're using mondo-bank with callback syntax
 
 # Enhancements
 - thinking emojis
+- for any queries that are out of context, it send off your query to giphy
 - multiple accounts
 - transactions should be able to set a date
 - transaction aggregation
