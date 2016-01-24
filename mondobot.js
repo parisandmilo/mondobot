@@ -149,7 +149,7 @@ controller.on('rtm_close',function(bot) {
 controller.hears('hello','direct_message',function(bot,message) {
   bot.reply(message,'Hello!');
   controller.storage.users.get(message.user, function(err, user){
-    if(user.mondoToken){
+    if(user.mondoToken&&user){
       // mondo.accounts(user.)
     }
     else{
