@@ -252,6 +252,11 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
                 username: "Barney",
                 image_url: "http://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2015/04/1428562937barney.gif",
               });
+              bot.api.reactions.remove({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
+                if (err) {
+                  bot.botkit.log("Failed to remove emoji reaction :(",err);
+                }
+              });
             });
           });
         }
@@ -312,7 +317,7 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
               mondo.balance(account_id, mondoToken, function(err, value){
                 var text = helpers.formatGBP(value.balance);
                 bot.reply(message, {
-                  text: text,
+                  text: "You have " + text,
                   icon_url: "http://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2015/04/1428562937barney.gif",
                   username: "The Stinsonator"});
               });
