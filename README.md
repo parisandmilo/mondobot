@@ -7,7 +7,14 @@ Building a mondo-slack integrating running botkit, and mondo-bank
 
 `cp .env.example .env` and change the environment variables to your creds - *only* `mondo_token` & `slack_token` are required
 
-note: you need to `npm start` for your bot to be online. you also have to manually config your bot atm sozzles
+To run a test bot locally, you will need to:
+- create a new slack app, set `slack_clientId` and `slack_clientSecret` in `.env`
+- set `botkit_port=some-port`
+- in the slack app, oAuth redirect should be `127.0.0.1:some-port`, and it should auto-create a bot
+- install redis and set `local_redis=true`
+- run `redis-server` and then `node mondobot.js`
+- hit `localhost:some-port/login` it should redirect you to slack, add it to the team you want
+- will be redirected to a success page and redis is ready
 
 
 ## Coding style

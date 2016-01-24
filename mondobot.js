@@ -3,13 +3,16 @@ require('dotenv').config();
 
 /* Uses the slack button feature to offer a real time bot to multiple teams */
 var Botkit = require('botkit'),
-  redisConfig = {"url": process.env.REDIS_URL};
+  redisConfig = {"url": process.env.REDIS_URL},
   redisStorage = require('botkit/lib/storage/redis_storage')(redisConfig);
+
+if(process.env.local_redis){
+  redisStorage = require('botkit/lib/storage/redis_storage')();
+}
   
 var mondo = require('mondo-bank');
 
 var Witbot = require("witbot")
-
 if (!process.env.slack_clientId || !process.env.slack_clientSecret || !process.env.botkit_port) {
   console.log('Error: Specify clientId clientSecret and port in environment');
   process.exit(1);
@@ -39,6 +42,9 @@ var controller = Botkit.slackbot({
 );
 
 controller.setupWebserver((process.env.PORT || process.env.botkit_port),function(err,webserver) {
+  webserver.get('/', function(req,res){
+    res.send("YOOOOOO");
+  });
   controller.createWebhookEndpoints(controller.webserver);
 
   controller.createOauthEndpoints(controller.webserver,function(err,req,res) {
