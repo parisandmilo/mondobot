@@ -224,7 +224,7 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
     });
     var holder = "Getting transactions";
     bot.reply(message, holder, function(){
-      controller.users.get(message.user, function(err, user){
+      controller.storage.users.get(message.user, function(err, user){
         mondoToken = user.mondoToken;
         mondo.accounts(mondoToken, function(err, value){
         if(value.accounts.length == 1){
@@ -269,7 +269,7 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
     });
   });
   wit.hears("account", 0.5, function(bot, message, outcome){
-    controller.users.get(message.user, function(err, user){
+    controller.storage.users.get(message.user, function(err, user){
       mondoToken = user.mondoToken;
       if(mondoToken){
         bot.reply(message, "These are your accounts: ");
@@ -296,7 +296,7 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
   });
   wit.hears("balance", 0.5, function(bot, message, outcome){
     bot.reply(message, ":horse_racing: , retrieving...", function(){
-      controller.users.get(message.user, function(err, user){
+      controller.storage.users.get(message.user, function(err, user){
         mondoToken = user.mondoToken;
         mondo.accounts(mondoToken, function(err, value){
           if(value.accounts.length == 1){
