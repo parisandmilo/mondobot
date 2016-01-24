@@ -43,8 +43,8 @@ var controller = Botkit.slackbot({
 );
 
 controller.setupWebserver((process.env.PORT || process.env.botkit_port),function(err,webserver) {
-  webserver.get('/', function(req,res){
-    res.send("YOOOOOO");
+  webserver.get('/mondo-oauth', function(req,res){
+    res.send("mondo oauth");
   });
   controller.createWebhookEndpoints(controller.webserver);
 
@@ -148,7 +148,7 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
 
 
   var wit = witbot.process(message.text, bot, message);
-
+  wit.hears("transaction", 0.5, require('./lib/replies/transaction.js'));
   wit.hears("balance", 0.5, function (bot, message, outcome) {
     if(mondoToken){
       bot.reply(message, "Getting balance", function(){
@@ -177,7 +177,10 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
       }
     });
 
-  })
+  });
+  
+  // wit.hears("transaction", 0.5, require('./lib/replies/transaction.js'));
+  
 
   wit.otherwise(function (bot, message) {
     bot.reply(message, "What you sayin bruv?");
