@@ -183,7 +183,23 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
   
 
   wit.otherwise(function (bot, message) {
-    bot.reply(message, "What you sayin bruv?");
+
+    var request = require("request");
+    request("http://api.giphy.com/v1/gifs/search?q=fail&api_key=dc6zaTOxFJmzC", function (error, response, body){
+      var data = JSON.parse(body);
+
+      var max = data.data.length;
+      var min = 0;
+
+      var randomNumber = Math.floor(Math.random() * (max - min)) + min;
+
+      gifUrl = data.data[randomNumber].images.downsized.url;
+
+      replyMessage = "what you sayin bruv\n" + gifUrl;
+
+      bot.reply(message, replyMessage);
+    })
+
 
 
     //Remove "working on it" reaction
