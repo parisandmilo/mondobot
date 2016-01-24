@@ -44,6 +44,9 @@ var controller = Botkit.slackbot({
 );
 
 controller.setupWebserver((process.env.PORT || process.env.botkit_port),function(err,webserver) {
+  webserver.get("/", function(req, res){
+    res.send('<a href="https://slack.com/oauth/authorize?scope=bot&client_id=16839103392.19247485637"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>')
+  });
   webserver.get('/mondo-oauth/:user', function(req,res){
     var userId = req.params.user;
 
@@ -86,8 +89,7 @@ controller.setupWebserver((process.env.PORT || process.env.botkit_port),function
     });
 
 
-    //controller.storage.users.save()
-    res.send("mondo oauth");
+    res.send("Success! Go back to Slack and start talking to your bank.");
   });
   controller.createWebhookEndpoints(controller.webserver);
 
@@ -152,7 +154,7 @@ controller.hears('hello','direct_message',function(bot,message) {
     }
     else{
       var oauthClientId = "oauthclient_0000932nzeY7632WKef0oj";
-      var redirectURI = "http://127.0.0.1:3001/mondo-oauth/" + message.user + "/";
+      var redirectURI = "http://mondoslackbot.herokuapp.com/mondo-oauth/" + message.user + "/";
       var final_url = "https://auth.getmondo.co.uk/?client_id=" + oauthClientId + "&redirect_uri=" + redirectURI + "&response_type=code"
 
       //store redirectURI
