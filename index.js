@@ -86,6 +86,7 @@ controller.hears(['show me where i spend the most money'], 'direct_message,direc
         var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
         bot.reply(message, text, function(){
           mondo.transactions(account_id, mondoToken, function(err, value){
+          	// adapt from http://bl.ocks.org/mbostock/4063269
             var diameter = 960,
 						    format = d3.format(",d"),
 						    color = d3.scale.category20c();
@@ -101,6 +102,8 @@ controller.hears(['show me where i spend the most money'], 'direct_message,direc
 						    .attr("height", diameter)
 						    .attr("class", "bubble");
 
+
+						// value.transactions needs to be parsed
 						d3.json(value.transactions, function(error, root) {
 						  if (error) throw error;
 
