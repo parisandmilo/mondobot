@@ -7,6 +7,7 @@ var Botkit = require('botkit'),
   redisStorage = require('botkit/lib/storage/redis_storage')(redisConfig);
 
 if(process.env.local_redis){
+  // is this a hack? maybe
   redisStorage = require('botkit/lib/storage/redis_storage')();
 }
   
@@ -23,7 +24,7 @@ if (!process.env.mondo_client_secret) {
 }
 
 if (!process.env.wit_token) {
-    console.log('Error: Specify wit token in environment');
+    console.log('Error: Specify wit_token in environment');
     process.exit(1);
 }
 
@@ -206,102 +207,13 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
       }
     });
 
-
-
   var wit = witbot.process(message.text, bot, message);
   wit.hears("transaction", 0.5, require('./lib/replies/transaction.js'));
-  wit.hears("balance", 0.5, function (bot, message, outcome) {
-    if(mondoToken){
-      bot.reply(message, "Getting balance", function(){
-        mondo.accounts(mondoToken, function(err, value){
-          if(value.accounts.length == 1){
-            var account_id = value.accounts[0].id;
-            var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
-            bot.reply(message, text, function(){
-              mondo.balance(account_id, mondoToken, function(err, value){
-                var text = helpers.formatGBP(value.balance);
-                bot.reply(message, text);
-              });
-            });
-          }
-        });
-      });
-    }
-    else{
-      bot.reply(message, "This would display the balance if I had a mondo token :(");
-    }
+  wit.hears("account", 0.5, require('./lib/replies/account.js'))
+  wit.hears("balance", 0.5, require('./lib/replies/balance.js'));
 
-    //Remove "working on it" reaction
-    bot.api.reactions.remove({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
-      if (err) {
-        bot.botkit.log("Failed to remove emoji reaction :(",err);
-      }
-    });
-
-  });
-  
-  // wit.hears("transaction", 0.5, require('./lib/replies/transaction.js'));
-  
-
-  wit.otherwise(function (bot, message) {
-
-    var request = require("request");
-    request("http://api.giphy.com/v1/gifs/search?q=fail&api_key=dc6zaTOxFJmzC", function (error, response, body){
-      var data = JSON.parse(body);
-
-      var max = data.data.length;
-      var min = 0;
-
-      var randomNumber = Math.floor(Math.random() * (max - min)) + min;
-
-      gifUrl = data.data[randomNumber].images.downsized.url;
-
-      replyMessage = "what you sayin bruv\n" + gifUrl;
-
-      bot.reply(message, replyMessage);
-    })
-
-
-
-    //Remove "working on it" reaction
-    bot.api.reactions.remove({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
-      if (err) {
-        bot.botkit.log("Failed to remove emoji reaction :(",err);
-      }
-    });
-
-    
-    //Add "sorry it failed" reaction
-    bot.api.reactions.add({timestamp: message.ts, channel: message.channel, name: 'slightly_frowning_face'},function(err,res) {
-      if (err) {
-        bot.botkit.log("Failed to add emoji reaction :(",err);
-      }
-    });
-
-  })
+  wit.otherwise(require('./lib/replies/giph.js'));
 })
-
-
-
-/*
-//balance command
-controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', function(bot, message){
-  bot.reply(message, "Getting balance", function(){
-    mondo.accounts(mondoToken, function(err, value){
-      if(value.accounts.length == 1){
-        var account_id = value.accounts[0].id;
-        var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
-        bot.reply(message, text, function(){
-          mondo.balance(account_id, mondoToken, function(err, value){
-            var text = formatGBP(value.balance);
-            bot.reply(message, text);
-          });
-        });
-      }
-    });
-  });
-});
-*/
 
 controller.storage.teams.all(function(err,teams) {
 

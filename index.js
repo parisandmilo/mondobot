@@ -51,40 +51,26 @@ controller.on('bot_channel_join', function(bot, message){
 controller.hears(['hello','hi'], 'direct_message,direct_mention,mention', function(bot, message){
   bot.reply(message, "hello");
 });
-//spambot
-controller.hears(['mondo'], 'ambient', function(bot, message){
-  bot.reply(message, "Hey, I'm the MondoBot" + String.fromCharCode(169));
+
+controller.hears(['hey'], 'direct_message,direct_mention,mention', function(bot, message){
+  bot.reply(message, "I just met you... \n and this is crazy \n here's my :1234: \n :calling: maybe?");
 });
+
+controller.hears(['node'], 'direct_message,direct_mention,mention', function(bot, message){
+  bot.reply(message, "THE 1 TRU3 D£V LANG");
+});
+
+//spambot
+controller.hears(['mondo'], 'ambient', require('./lib/replies/mondoTroll.js'));
+
+
 //this is where the API integration starts
 
 //accounts
-controller.hears(['account', 'accounts'], 'direct_message,direct_mention,mention', function(bot, message){
-  bot.reply(message, "These are your accounts: ");
-  mondo.accounts(mondoToken, function(err, value){
-    var text = value.accounts.map(function(account, index){
-      return index + 1 + ". Account: " + account.id + ", " + account.description;
-    }).join("\n");
-    bot.reply(message, text);
-  });
-});
+controller.hears(['account', 'accounts'], 'direct_message,direct_mention,mention', require('./lib/replies/account.js'));
 
 //balance command
-controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', function(bot, message){
-  bot.reply(message, "Getting balance", function(){
-    mondo.accounts(mondoToken, function(err, value){
-      if(value.accounts.length == 1){
-        var account_id = value.accounts[0].id;
-        var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
-        bot.reply(message, text, function(){
-          mondo.balance(account_id, mondoToken, function(err, value){
-            var text = helpers.formatGBP(value.balance);
-            bot.reply(message, text);
-          });
-        });
-      }
-    });
-  });
-});
+controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', require('./lib/replies/balance.js'));
 
 //transactions command
 controller.hears(['transactions'], 'direct_message,direct_mention,mention', require('./lib/replies/transaction.js'));
@@ -109,6 +95,7 @@ controller.hears(['show me where i spend the most money'], 'direct_message,direc
         var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
         bot.reply(message, text, function(){
           mondo.transactions(account_id, mondoToken, function(err, value){
+          	// adapt from http://bl.ocks.org/mbostock/4063269
             var diameter = 960,
 						    format = d3.format(",d"),
 						    color = d3.scale.category20c();
@@ -124,6 +111,8 @@ controller.hears(['show me where i spend the most money'], 'direct_message,direc
 						    .attr("height", diameter)
 						    .attr("class", "bubble");
 
+
+						// value.transactions needs to be parsed
 						d3.json(value.transactions, function(error, root) {
 						  if (error) throw error;
 
