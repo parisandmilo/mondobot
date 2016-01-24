@@ -222,14 +222,14 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
         bot.botkit.log("soz no emoji lulz",err);
       }
     });
-    var holder = "Getting transactions";
+    var holder = "I'm working man... :man_in_business_suit_levitating:";
     bot.reply(message, holder, function(){
       controller.storage.users.get(message.user, function(err, user){
         mondoToken = user.mondoToken;
         mondo.accounts(mondoToken, function(err, value){
         if(value.accounts.length == 1){
           var account_id = value.accounts[0].id;
-          var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
+          var text = "Your account belongs to: " + value.accounts[0].description + ", id: " + account_id;
           bot.reply(message, text, function(){
             mondo.transactions(account_id, mondoToken, function(err, value){
               console.log(err);
@@ -247,8 +247,11 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
                 }
               }); 
               bot.reply(message,{
-                  text: ":smoking: simple.",
-                });
+                text: ":smoking: simple.",
+                icon_url: "http://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2015/04/1428562937barney.gif",
+                username: "Barney",
+                image_url: "http://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2015/04/1428562937barney.gif",
+              });
             });
           });
         }
@@ -272,12 +275,15 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
     controller.storage.users.get(message.user, function(err, user){
       mondoToken = user.mondoToken;
       if(mondoToken){
-        bot.reply(message, "These are your accounts: ");
+        bot.reply(message,  "Hit me up, Barney ");
         mondo.accounts(mondoToken, function(err, value){
           var text = value.accounts.map(function(account, index){
-            return index + 1 + ". Account: " + account.description;
+            return "CHECK IT :man_in_business_suit_levitating: \n" + index + 1 + ". Account: " + account.description;
           }).join("\n");
-          bot.reply(message, text);
+          bot.reply(message, {
+            text: text,
+            icon_url: "http://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2015/04/1428562937barney.gif",
+            username: "The Stinsonator"});
         });
       }
       else{
@@ -295,17 +301,20 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
     });
   });
   wit.hears("balance", 0.5, function(bot, message, outcome){
-    bot.reply(message, ":horse_racing: , retrieving...", function(){
+    bot.reply(message, ":horse_racing: , let me just check the Play Book...", function(){
       controller.storage.users.get(message.user, function(err, user){
         mondoToken = user.mondoToken;
         mondo.accounts(mondoToken, function(err, value){
           if(value.accounts.length == 1){
             var account_id = value.accounts[0].id;
-            var text = "Account: " + value.accounts[0].description;
+            var text = "Your account belongs to: " + value.accounts[0].description;
             bot.reply(message, text, function(){
               mondo.balance(account_id, mondoToken, function(err, value){
                 var text = helpers.formatGBP(value.balance);
-                bot.reply(message, text);
+                bot.reply(message, {
+                  text: text,
+                  icon_url: "http://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2015/04/1428562937barney.gif",
+                  username: "The Stinsonator"});
               });
             });
           }
