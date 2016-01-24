@@ -51,6 +51,15 @@ controller.on('bot_channel_join', function(bot, message){
 controller.hears(['hello','hi'], 'direct_message,direct_mention,mention', function(bot, message){
   bot.reply(message, "hello");
 });
+
+controller.hears(['hey'], 'direct_message,direct_mention,mention', function(bot, message){
+  bot.reply(message, "I just met you... \n and this is crazy \n here's my :1234: \n :calling: maybe?");
+});
+
+controller.hears(['node'], 'direct_message,direct_mention,mention', function(bot, message){
+  bot.reply(message, "THE 1 TRU3 D£V LANG");
+});
+
 //spambot
 controller.hears(['mondo'], 'ambient', require('./lib/replies/mondoTroll.js'));
 
