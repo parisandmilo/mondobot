@@ -5,12 +5,27 @@ require('dotenv').config();
 var Botkit = require('botkit'),
   redisConfig = {"url": process.env.REDIS_URL};
   redisStorage = require('botkit/lib/storage/redis_storage')(redisConfig);
+  
+var mondo = require('mondo-bank');
+
+var Witbot = require("witbot")
 
 if (!process.env.slack_clientId || !process.env.slack_clientSecret || !process.env.botkit_port) {
   console.log('Error: Specify clientId clientSecret and port in environment');
   process.exit(1);
 }
+if (!process.env.mondo_token) {
+    console.log('Error: Specify Mondo token in environment');
+    process.exit(1);
+}
 
+if (!process.env.wit_token) {
+    console.log('Error: Specify wit token in environment');
+    process.exit(1);
+}
+
+var mondoToken = process.env.mondo_token;
+var witbot = Witbot(process.env.wit_token);
 
 var controller = Botkit.slackbot({
   storage: redisStorage
@@ -104,17 +119,84 @@ controller.hears(['call me (.*)'],'direct_message,direct_mention,mention',functi
     });
 });
 
+controller.hears(['what is my name','who am i'],'direct_message,direct_mention,mention',function(bot, message) {
 
-controller.on(['direct_message','mention','direct_mention'],function(bot,message) {
-  bot.api.reactions.add({
-    timestamp: message.ts,
-    channel: message.channel,
-    name: 'robot_face',
-  },function(err) {
-    if (err) { console.log(err) }
-    bot.reply(message,'I heard you loud and clear boss.');
+    controller.storage.users.get(message.user,function(err, user) {
+        if (user && user.name) {
+            bot.reply(message,'Your name is ' + user.name);
+        } else {
+            bot.reply(message,'I don\'t know yet!');
+        }
+    });
+});
+
+controller.hears('.*', 'direct_message, direct_mention', function (bot, message) {
+  //Add "working on it" reaction
+    bot.api.reactions.add({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
+      if (err) {
+        bot.botkit.log("Failed to add emoji reaction :(",err);
+      }
+    });
+
+
+
+  var wit = witbot.process(message.text, bot, message);
+
+  wit.hears("balance", 0.5, function (bot, message, outcome) {
+    bot.reply(message, "This would display the balance if I had a mondo token :(");
+
+    //Remove "working on it" reaction
+    bot.api.reactions.remove({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
+      if (err) {
+        bot.botkit.log("Failed to remove emoji reaction :(",err);
+      }
+    });
+
+  })
+
+  wit.otherwise(function (bot, message) {
+    bot.reply(message, "What you sayin bruv?");
+
+
+    //Remove "working on it" reaction
+    bot.api.reactions.remove({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
+      if (err) {
+        bot.botkit.log("Failed to remove emoji reaction :(",err);
+      }
+    });
+
+    
+    //Add "sorry it failed" reaction
+    bot.api.reactions.add({timestamp: message.ts, channel: message.channel, name: 'slightly_frowning_face'},function(err,res) {
+      if (err) {
+        bot.botkit.log("Failed to add emoji reaction :(",err);
+      }
+    });
+
+  })
+})
+
+
+
+/*
+//balance command
+controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', function(bot, message){
+  bot.reply(message, "Getting balance", function(){
+    mondo.accounts(mondoToken, function(err, value){
+      if(value.accounts.length == 1){
+        var account_id = value.accounts[0].id;
+        var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
+        bot.reply(message, text, function(){
+          mondo.balance(account_id, mondoToken, function(err, value){
+            var text = formatGBP(value.balance);
+            bot.reply(message, text);
+          });
+        });
+      }
+    });
   });
 });
+*/
 
 controller.storage.teams.all(function(err,teams) {
 
