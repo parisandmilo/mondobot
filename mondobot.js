@@ -43,7 +43,8 @@ var controller = Botkit.slackbot({
 );
 
 controller.setupWebserver((process.env.PORT || process.env.botkit_port),function(err,webserver) {
-  webserver.get('/mondo-oauth', function(req,res){
+  webserver.get('/mondo-oauth/:user', function(req,res){
+    console.log(req.params.user);
     res.send("mondo oauth");
   });
   controller.createWebhookEndpoints(controller.webserver);
@@ -103,6 +104,14 @@ controller.on('rtm_close',function(bot) {
 
 controller.hears('hello','direct_message',function(bot,message) {
   bot.reply(message,'Hello!');
+  controller.storage.users.get(message.user, function(err, user){
+    if(user.mondoToken){
+      // mondo.accounts(user.)
+    }
+    else{
+      bot.reply(message, "Hi there click here to access mondo: http://mondo.co.uk/oauth?callback_url=localhost:3000/mondo-oauth" + message.user);
+    }
+  });
 });
 
 controller.hears('^stop','direct_message',function(bot,message) {
