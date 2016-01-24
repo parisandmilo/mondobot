@@ -17,8 +17,8 @@ if (!process.env.slack_clientId || !process.env.slack_clientSecret || !process.e
   console.log('Error: Specify slack_clientId slack_clientSecret and botkit_port in environment');
   process.exit(1);
 }
-if (!process.env.mondo_token) {
-    console.log('Error: Specify Mondo token in environment');
+if (!process.env.mondo_client_secret) {
+    console.log('Error: Specify Mondo client secret in environment');
     process.exit(1);
 }
 
@@ -44,7 +44,48 @@ var controller = Botkit.slackbot({
 
 controller.setupWebserver((process.env.PORT || process.env.botkit_port),function(err,webserver) {
   webserver.get('/mondo-oauth/:user', function(req,res){
-    console.log(req.params.user);
+    var userId = req.params.user;
+
+    //get code from querystring
+    var auth_code = req.query.code;
+    console.log("Auth code", auth_code);
+
+    //Final Oauth Step
+    var grant_type = "authorization_code";
+    var client_id = "oauthclient_0000932nzeY7632WKef0oj";
+    var client_secret = process.env.mondo_client_secret;
+    controller.storage.users.get(userId, function (err, user){
+      console.log("user", user);
+      var redirectURI = user.mondo_redirectURI;
+      console.log("Redirect URI", redirectURI);
+
+      var request = require("request");
+
+      url = "https://api.getmondo.co.uk/oauth2/token"
+      request({
+        "url": url,
+        "form": {
+          "grant_type": grant_type,
+          "client_id": client_id,
+          "client_secret": client_secret,
+          "redirect_uri": redirectURI,
+          "code": auth_code,
+        },
+        method: "POST"
+        }, function (error, response, body) {
+          data = JSON.parse(body);
+
+          user.mondoToken = data.access_token;
+          controller.storage.users.save(user, function(err, id) {
+            console.log(user);
+          });
+
+
+      })
+    });
+
+
+    //controller.storage.users.save()
     res.send("mondo oauth");
   });
   controller.createWebhookEndpoints(controller.webserver);
@@ -109,7 +150,18 @@ controller.hears('hello','direct_message',function(bot,message) {
       // mondo.accounts(user.)
     }
     else{
-      bot.reply(message, "Hi there click here to access mondo: http://mondo.co.uk/oauth?callback_url=localhost:3000/mondo-oauth" + message.user);
+      var oauthClientId = "oauthclient_0000932nzeY7632WKef0oj";
+      var redirectURI = "http://127.0.0.1:3001/mondo-oauth/" + message.user + "/";
+      var final_url = "https://auth.getmondo.co.uk/?client_id=" + oauthClientId + "&redirect_uri=" + redirectURI + "&response_type=code"
+
+      //store redirectURI
+
+        user.mondo_redirectURI = redirectURI;
+        controller.storage.users.save(user, function(err, id) {
+          console.log(user);
+          });
+
+      bot.reply(message, "Hi there click here to access mondo: " + final_url);
     }
   });
 });
