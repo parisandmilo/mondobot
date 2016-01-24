@@ -34,12 +34,7 @@ var fs      = require('fs');
 var data		= require('./data.js');
 
 
-function formatGBP(value){
-  var str = value +'';
-  var len = str.length;
-  var text = str.slice(0, len - 2) + "." + str.slice(len - 2, len) + " GBP";
-  return text;
-}
+var helpers = require('./lib/helpers.js');
 
 var bot = controller.spawn({
     token: process.env.slack_token
@@ -81,7 +76,7 @@ controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', funct
         var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
         bot.reply(message, text, function(){
           mondo.balance(account_id, mondoToken, function(err, value){
-            var text = formatGBP(value.balance);
+            var text = helpers.formatGBP(value.balance);
             bot.reply(message, text);
           });
         });
@@ -111,7 +106,7 @@ controller.hears(['transactions'], 'direct_message,direct_mention,mention', func
 
             var text = JSON.stringify(value.transactions);
             var text = value.transactions.map(function(transaction, index){
-              return index + 1 + ". transaction: " + transaction.description + ", " + transaction.description + ", " + formatGBP(transaction.amount);
+              return index + 1 + ". transaction: " + transaction.description + ", " + transaction.description + ", " + helpers.formatGBP(transaction.amount);
             }).join("\n");
             bot.reply(message, text);
             bot.api.reactions.remove({

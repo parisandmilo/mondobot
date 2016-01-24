@@ -29,6 +29,7 @@ if (!process.env.wit_token) {
 
 var mondoToken = process.env.mondo_token;
 var witbot = Witbot(process.env.wit_token);
+var helpers = require('./lib/helpers.js');
 
 var controller = Botkit.slackbot({
   storage: redisStorage
@@ -149,7 +150,25 @@ controller.hears('.*', 'direct_message, direct_mention', function (bot, message)
   var wit = witbot.process(message.text, bot, message);
 
   wit.hears("balance", 0.5, function (bot, message, outcome) {
-    bot.reply(message, "This would display the balance if I had a mondo token :(");
+    if(mondoToken){
+      bot.reply(message, "Getting balance", function(){
+        mondo.accounts(mondoToken, function(err, value){
+          if(value.accounts.length == 1){
+            var account_id = value.accounts[0].id;
+            var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
+            bot.reply(message, text, function(){
+              mondo.balance(account_id, mondoToken, function(err, value){
+                var text = helpers.formatGBP(value.balance);
+                bot.reply(message, text);
+              });
+            });
+          }
+        });
+      });
+    }
+    else{
+      bot.reply(message, "This would display the balance if I had a mondo token :(");
+    }
 
     //Remove "working on it" reaction
     bot.api.reactions.remove({timestamp: message.ts, channel: message.channel, name: 'thinking_face'},function(err,res) {
