@@ -52,39 +52,16 @@ controller.hears(['hello','hi'], 'direct_message,direct_mention,mention', functi
   bot.reply(message, "hello");
 });
 //spambot
-controller.hears(['mondo'], 'ambient', function(bot, message){
-  bot.reply(message, "Hey, I'm the MondoBot" + String.fromCharCode(169));
-});
+controller.hears(['mondo'], 'ambient', require('./lib/replies/mondoTroll.js'));
+
+
 //this is where the API integration starts
 
 //accounts
-controller.hears(['account', 'accounts'], 'direct_message,direct_mention,mention', function(bot, message){
-  bot.reply(message, "These are your accounts: ");
-  mondo.accounts(mondoToken, function(err, value){
-    var text = value.accounts.map(function(account, index){
-      return index + 1 + ". Account: " + account.id + ", " + account.description;
-    }).join("\n");
-    bot.reply(message, text);
-  });
-});
+controller.hears(['account', 'accounts'], 'direct_message,direct_mention,mention', require('./lib/replies/account.js'));
 
 //balance command
-controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', function(bot, message){
-  bot.reply(message, "Getting balance", function(){
-    mondo.accounts(mondoToken, function(err, value){
-      if(value.accounts.length == 1){
-        var account_id = value.accounts[0].id;
-        var text = "Account: " + value.accounts[0].description + ", id: " + account_id;
-        bot.reply(message, text, function(){
-          mondo.balance(account_id, mondoToken, function(err, value){
-            var text = helpers.formatGBP(value.balance);
-            bot.reply(message, text);
-          });
-        });
-      }
-    });
-  });
-});
+controller.hears(['balance(.*)'], 'direct_message,direct_mention,mention', require('./lib/replies/balance.js'));
 
 //transactions command
 controller.hears(['transactions'], 'direct_message,direct_mention,mention', require('./lib/replies/transaction.js'));

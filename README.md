@@ -1,6 +1,6 @@
 # MondoBot for Slack
 MONDO HACK III
-Building a mondo-slack integrating running botkit, and mondo-bank
+Building a mondo-slack integrating botkit, wit.ai, giphy and mondo-bank
 
 ## Setup
 `npm install` to install dependencies
@@ -26,14 +26,16 @@ We're using mondo-bank with callback syntax
 - `transactions` only works if you `@` the bot
 - Catch all errors
 - webshot streaming back to slack - not saving the file
+- have all the `.hears("")` added to wit.ai
 
 ## Enhancements
-- thinking emojis
-- for any queries that are out of context, it send off your query to giphy
-- multiple accounts
-- transactions should be able to set a date
+- DONE: thinking emojis
+- DONE: for any queries that are out of context, it send off your query to giphy
+- DOING: multiple accounts (oAuth through Mondo 3-legged web auth stored in Redis)
+- transactions should be able to set a date range
 - transaction aggregation
+- add a help menu (of the commands that can be done and how)
 - visualise le data
 - team spending
 - team reimbursements
-- ML ALL DA THINGS, chrono to parse any dates
+- DOING ML ALL DA THINGS, chrono to parse any dates
