@@ -14,7 +14,7 @@ var mondo = require('mondo-bank');
 
 var Witbot = require("witbot")
 if (!process.env.slack_clientId || !process.env.slack_clientSecret || !process.env.botkit_port) {
-  console.log('Error: Specify clientId clientSecret and port in environment');
+  console.log('Error: Specify slack_clientId slack_clientSecret and botkit_port in environment');
   process.exit(1);
 }
 if (!process.env.mondo_token) {
