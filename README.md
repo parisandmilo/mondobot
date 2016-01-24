@@ -25,7 +25,7 @@ We're using mondo-bank with callback syntax
 ## To Fix
 - `transactions` only works if you `@` the bot
 - Catch all errors
-- `data.js` don't work but u kind of get it: it's supposed to visualise the transactions onto `index.html` when someone asks for transactions and use webshot to stream it back
+- webshot streaming back to slack - not saving the file
 
 ## Enhancements
 - thinking emojis
